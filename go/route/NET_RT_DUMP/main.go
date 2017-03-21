@@ -50,7 +50,18 @@ func main() {
 				ip = make(net.IP, net.IPv6len)
 				copy(ip, a.IP[:])
 			}
-			fmt.Printf("ip = %s\n", ip)
+			if ok, err := privateIP(ip.String()); err != nil {
+				continue
+			} else if !ok {
+				switch ip.String() {
+				case "0.0.0.0":
+					continue
+				case "128.0.0.0":
+					continue
+				default:
+					fmt.Printf("ip = %s\n", ip)
+				}
+			}
 		}
 	}
 	return
