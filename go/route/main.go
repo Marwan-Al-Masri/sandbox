@@ -12,7 +12,7 @@ import (
 const UGSH = syscall.RTF_UP | syscall.RTF_STATIC | syscall.RTF_GATEWAY | syscall.RTF_HOST
 
 func main() {
-	rib, err := route.FetchRIB(syscall.AF_INET, route.RIBTypeRoute, 0)
+	rib, err := route.FetchRIB(syscall.AF_UNSPEC, route.RIBTypeRoute, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
