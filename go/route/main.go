@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"syscall"
 
 	"golang.org/x/net/route"
@@ -15,18 +16,24 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	m, err := route.ParseRIB(route.RIBTypeRoute, rib)
+	msgs, err := route.ParseRIB(route.RIBTypeRoute, rib)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, v := range m {
-		x := v.(*route.RouteMessage)
-		if x.Flags == UGSH {
-			for _, a := range x.Addrs {
-				switch t := a.(type) {
+	for _, msg := range msgs {
+		m := msg.(*route.RouteMessage)
+		if m.Flags == UGSH {
+			for _, a := range m.Addrs {
+				var ip net.IP
+				switch a := a.(type) {
 				case *route.Inet4Addr:
-					fmt.Printf("IP = %v\n", t.IP)
+					ip = net.IPv4(a.IP[0], a.IP[1], a.IP[2], a.IP[3])
+				case *route.Inet6Addr:
+					ip = make(net.IP, net.IPv6len)
+					copy(ip, a.IP[:])
 				}
+				fmt.Printf("ip = %+v\n", ip)
+				return
 			}
 		}
 	}
